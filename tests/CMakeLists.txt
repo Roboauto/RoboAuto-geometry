@@ -36,7 +36,7 @@ include_directories("${source_dir}/googletest/include"
 find_package(Qt5Core)
 find_package(Qt5Charts)
 
-add_executable(RoboAuto_geometry_tests testMain.cpp PolygonTest.h LineTest.h VectorTest.h)
+add_executable(RoboAuto_geometry_tests testMain.cpp PolygonTest.h LineTest.h VectorTest.h CircleTest.h)
 
 target_link_libraries(RoboAuto_geometry_tests libgtest libgmock)
 

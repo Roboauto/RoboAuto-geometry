@@ -52,9 +52,11 @@ TEST( Polygon, rotate )
 
 	auto r = t.rotate( M_PI_2 );
 
-	ASSERT_EQ( r.getVectors()[ 0 ], K );
+	ASSERT_EQ( K, r.getVectors()[ 0 ]);
+
 	ASSERT_NEAR( M.x, r.getVectors()[ 1 ].x, PRECISION );
 	ASSERT_NEAR( M.y, r.getVectors()[ 1 ].y, PRECISION );
 
-	ASSERT_EQ( r.getVectors()[ 0 ], L2 );
+	ASSERT_NEAR( L2.x, r.getVectors()[ 2 ].x, PRECISION );
+	ASSERT_NEAR( L2.y, r.getVectors()[ 2 ].y, PRECISION );
 }

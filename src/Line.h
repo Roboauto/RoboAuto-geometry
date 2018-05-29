@@ -21,6 +21,12 @@ public:
 	                                                             infinite( _infinite ) { };
 
 
+	Vector direction( )
+	{
+		return ( to - from ) / lenght();
+	}
+
+
 	double distance( Vector vector )
 	{
 		double d = sqrt( a * a + b * b );
@@ -37,6 +43,13 @@ public:
 
 		series->setName( name.c_str() );
 		return series;
+	}
+
+
+	//TODO: Tests
+	double lenght( )
+	{
+		return from.distance( to );
 	}
 
 
@@ -114,18 +127,19 @@ public:
 		auto oTo = p.orientation( to );
 
 
-		if (oFrom != oTo || vector.distance(from) == vector.distance(to)){
+		if ( oFrom != oTo || vector.distance( from ) == vector.distance( to ) ) {
 			return nearest;
-		} else if (vector.distance(from) < vector.distance(to)){
+		} else if ( vector.distance( from ) < vector.distance( to ) ) {
 			return from;
 		} else {
 			return to;
 		}
 	}
 
+
 	bool onSegment( Vector v )
 	{
-		return segmentDistance(v) == 0;
+		return segmentDistance( v ) == 0;
 	}
 
 
@@ -164,6 +178,8 @@ public:
 //		return from + " - " + to;
 //	}
 
+	Vector from;
+	Vector to;
 
 private:
 
@@ -183,11 +199,6 @@ private:
 		return ( val > 0 ) ? Orientation::clockWise : Orientation::counterClockWise;
 	}
 
-
-
-
-	Vector from;
-	Vector to;
 
 	double a;
 	double b;

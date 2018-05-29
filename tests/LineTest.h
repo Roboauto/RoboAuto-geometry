@@ -7,8 +7,6 @@
 #include <gtest/gtest.h>
 #include "../src/Line.h"
 
-#define PRECISION 0.00001
-
 TEST( Line, distance )
 {
 	Vector A( 1, 0 );

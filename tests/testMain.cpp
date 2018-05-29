@@ -6,6 +6,7 @@
 #include "VectorTest.h"
 #include "PolygonTest.h"
 #include "LineTest.h"
+#include "CircleTest.h"
 
 int main(int argc, char **argv)
 {

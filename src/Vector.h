@@ -153,6 +153,19 @@ public:
 	}
 
 
+	//TODO: Tests
+	double operator/( Vector vector ) const
+	{
+		return x / vector.x + y / vector.y;
+	}
+
+
+	Vector operator/( double i ) const
+	{
+		return { x / i, y / i };
+	}
+
+
 	explicit operator std::string( ) const
 	{
 		return "[" + std::to_string( x ) + "," + std::to_string( y ) + "]";
