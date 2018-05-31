@@ -50,8 +50,8 @@ TEST( Circle, intersect )
 
 	Vector D{ 6, 5 };
 
-	Line u{A, B};
-	Line p{A, D};
+	Line u{A, B, true};
+	Line p{A, D, true};
 
 	Circle Cir{3, C};
 	ASSERT_EQ(Cir.intersect(u), true);
@@ -63,12 +63,24 @@ TEST( Circle, intersection )
 {
 	Vector C{ 0, 0 };
 
-	Vector A{ -2, -2 };
-	Vector B{ 2, 2 };
+	Vector A{ -2, 0 };
+	Vector B{ 0, 0 };
 	Line p{A, B};
 
-	std::vector<Vector> v{};
+	Vector X{ 4, 0 };
+	Line u{X, B};
+
+	Line z{A, X};
+
+	Vector Col{-1, 0};
+	Vector Col2{1, 0};
+
+	std::vector<Vector> v{Col};
+	std::vector<Vector> v2{Col2};
+	std::vector<Vector> v3{Col, Col2};
 
 	Circle Cir{1, C};
 	ASSERT_EQ(Cir.intersection(p), v) << Cir.intersect(p);
+	ASSERT_EQ(Cir.intersection(u), v2) << Cir.intersect(p);
+	ASSERT_EQ(Cir.intersection(z), v3) << Cir.intersect(p);
 }

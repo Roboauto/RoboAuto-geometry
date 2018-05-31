@@ -5,6 +5,7 @@
 #pragma once
 
 #include <gtest/gtest.h>
+#include "../src/Vector.h"
 #include "../src/Line.h"
 
 TEST( Line, distance )
@@ -88,9 +89,9 @@ TEST( Line, nearestVectorOnLine )
 	Vector C( 1, 3 );
 	Vector N( 2, 2 );
 
-	Line p{ A, B };
+	Line p{ A, B, true};
 
-	ASSERT_EQ( p.nearestVectorOnLine( C ), N );
+	ASSERT_EQ( p.nearestVector( C ), N );
 }
 
 
@@ -125,13 +126,13 @@ TEST( Line, nearestVectorOnLineSegment )
 	Line s{ S, D };
 	Line d{ D, S };
 
-	ASSERT_EQ( p.nearestVectorOnLineSegment( C ), N );
-	ASSERT_EQ( p.nearestVectorOnLineSegment( X ), Q );
+	ASSERT_EQ( p.nearestVector( C ), N );
+	ASSERT_EQ( p.nearestVector( X ), Q );
 
-	ASSERT_EQ( u.nearestVectorOnLineSegment( Y ), L );
+	ASSERT_EQ( u.nearestVector( Y ), L );
 
-	ASSERT_EQ( s.nearestVectorOnLineSegment( Z ), SDC );
-	ASSERT_EQ( d.nearestVectorOnLineSegment( Z ), SDC );
+	ASSERT_EQ( s.nearestVector( Z ), SDC );
+	ASSERT_EQ( d.nearestVector( Z ), SDC );
 }
 
 

@@ -7,7 +7,9 @@
 #include "../src/Vector.h"
 #include "gtest/gtest.h"
 
+#ifndef PRECISION
 #define PRECISION 0.0001
+#endif
 
 TEST( Vector, alpha )
 {

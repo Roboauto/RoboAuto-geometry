@@ -4,19 +4,25 @@
 
 #pragma once
 
+#ifdef QT_DRAW
 #include <QtCharts>
 #include "Drawable.h"
-
 using namespace QtCharts;
-
+#endif
 
 class Drawer
 {
 private:
+#ifdef QT_DRAW
 	Drawer( ) : chart( new QChart() ) { };
+#else
+
+	Drawer( );
+
+#endif
 
 public:
-
+#ifdef QT_DRAW
 	static void draw( Drawable &series, std::string name = "" )
 	{
 		getInstance()->chart->addSeries( series.draw( name ) );
@@ -41,7 +47,17 @@ public:
 		instance->window->resize( 600, 600 );
 		instance->window->show();
 	}
+#else
 
+
+	template < class T >
+	static void draw( T& series, std::string name = "" ) { }
+
+
+	static void show( ) { }
+
+
+#endif
 
 private:
 	static Drawer *getInstance( )
@@ -51,8 +67,10 @@ private:
 	}
 
 
+#ifdef QT_DRAW
 	QChart *chart;
 	QMainWindow *window;
+#endif
 };
 
 

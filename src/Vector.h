@@ -6,8 +6,16 @@
 
 #include <cmath>
 #include <sstream>
-#include <QScatterSeries>
 #include "Drawable.h"
+#include "Geometry.h"
+
+#ifdef QT_DRAW
+#include <QScatterSeries>
+#endif
+
+#ifndef PRECISION
+#define PRECISION 0.0001
+#endif
 
 enum Axe
 {
@@ -15,37 +23,40 @@ enum Axe
 	y,
 };
 
-class Vector : public Drawable
+
+class Vector : public Drawable, GeometryMath::DistanceTrait
 {
 public:
-	Vector( double _x, double _y ) : x( _x ), y( _y ) { };
+	Vector( double _x, double _y ) : x( _x ), y( _y ) {};
+	Vector(): x(0), y(0) {};
 
 
-	double alpha( )
+	double alpha( ) const
 	{
-		return atan2( y, x );
+		return std::atan2( y, x );
 	}
 
 
 	//TODO: Check
-	double angleWith( Vector& vector )
+	double angleWith( Vector& vector ) const
 	{
-		return abs( alpha() - vector.alpha() );
+		return std::abs( alpha() - vector.alpha() );
 	}
 
 
-	double crossProduct( Vector& vector )
+	double crossProduct( Vector& vector ) const
 	{
 		return x * vector.y - y * vector.x;
 	}
 
 
-	double distance( Vector vector )
-	{
-		return sqrt( pow( vector.x - x, 2 ) + pow( vector.y - y, 2 ) );
-	}
+//	template < class T >
+//	double distance( T& object ) const
+//	{
+//		return GeometryMath::distance(*this, object);
+//	}
 
-
+#ifdef QT_DRAW
 	QAbstractSeries *draw( std::string name ) override
 	{
 		auto *point = new QScatterSeries();
@@ -58,11 +69,12 @@ public:
 
 		return point;
 	}
+#endif
 
 
-	double length( )
+	double length( ) const
 	{
-		return sqrt( pow( x, 2 ) + pow( y, 2 ) );
+		return std::sqrt( x*x + y*y );
 	}
 
 
@@ -71,23 +83,10 @@ public:
 		return { x, -y };
 	}
 
-
-//	Vector rotate( double radian )
-//	{
-//		double s = sin( radian );
-//		double c = cos( radian );
-//
-//		return {
-//				x * c + y * s,
-//				-x * s + y * c
-//		};
-//	}
-
-
-	Vector rotate( double radian, Vector center = { 0, 0 } )
+	Vector rotate( double radian, const Vector& center = { 0, 0 } )
 	{
-		double s = sin( radian );
-		double c = cos( radian );
+		double s = std::sin( radian );
+		double c = std::cos( radian );
 
 		double nx = x - center.x;
 		double ny = y - center.y;
@@ -135,7 +134,7 @@ public:
 	}
 
 
-	double operator-( double i )
+	double operator-( double const i ) const
 	{
 		return length() - i;
 	}
@@ -172,6 +171,6 @@ public:
 	}
 
 
-	double x;
-	double y;
+	const double x;
+	const double y;
 };

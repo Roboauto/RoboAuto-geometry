@@ -32,6 +32,8 @@ TEST( Polygon, contains )
 	Polygon < 4 > o( point );
 	Polygon < 6 > l( pointl );
 
+	ASSERT_EQ( o.distance( B ), 2);
+
 	ASSERT_EQ( o.contains( B ), false );
 	ASSERT_EQ( o.contains( F ), true );
 	ASSERT_EQ( l.contains( F ), false );
@@ -52,11 +54,11 @@ TEST( Polygon, rotate )
 
 	auto r = t.rotate( M_PI_2 );
 
-	ASSERT_EQ( K, r.getVectors()[ 0 ]);
+	ASSERT_EQ( K, r.vectors[ 0 ] );
 
-	ASSERT_NEAR( M.x, r.getVectors()[ 1 ].x, PRECISION );
-	ASSERT_NEAR( M.y, r.getVectors()[ 1 ].y, PRECISION );
+	ASSERT_NEAR( M.x, r.vectors[ 1 ].x, PRECISION );
+	ASSERT_NEAR( M.y, r.vectors[ 1 ].y, PRECISION );
 
-	ASSERT_NEAR( L2.x, r.getVectors()[ 2 ].x, PRECISION );
-	ASSERT_NEAR( L2.y, r.getVectors()[ 2 ].y, PRECISION );
+	ASSERT_NEAR( L2.x, r.vectors[ 2 ].x, PRECISION );
+	ASSERT_NEAR( L2.y, r.vectors[ 2 ].y, PRECISION );
 }

@@ -10,10 +10,10 @@
 #include "Vector.h"
 
 
-class Line : public Drawable
+class Line : public Drawable, GeometryMath::DistanceTrait
 {
 public:
-	Line( Vector& _from, Vector& _to, bool _infinite = false ) : from( _from ),
+	Line( const Vector& _from, const Vector& _to, bool _infinite = false ) : from( _from ),
 	                                                             to( _to ),
 	                                                             a( _from.y - _to.y ),
 	                                                             b( _to.x - _from.x ),
@@ -21,20 +21,13 @@ public:
 	                                                             infinite( _infinite ) { };
 
 
-	Vector direction( )
+	Vector direction( ) const
 	{
 		return ( to - from ) / lenght();
 	}
 
 
-	double distance( Vector vector )
-	{
-		double d = sqrt( a * a + b * b );
-		double d1 = abs( a * vector.x + b * vector.y + c );
-		return d1 / d;
-	};
-
-
+#ifdef QT_DRAW
 	QAbstractSeries *draw( std::string name ) override
 	{
 		auto *series = new QLineSeries();
@@ -44,16 +37,17 @@ public:
 		series->setName( name.c_str() );
 		return series;
 	}
+#endif
 
 
 	//TODO: Tests
-	double lenght( )
+	double lenght( ) const
 	{
 		return from.distance( to );
 	}
 
 
-	bool intersect( Line line )
+	bool intersect( const Line& line ) const
 	{
 		Orientation o1 = orientation( line.from );
 		Orientation o2 = orientation( line.to );
@@ -83,9 +77,11 @@ public:
 	}
 
 
-	Vector intersection( Line line )
+	Vector intersection( const Line& line )
 	{
-		if ( ( !infinite && !intersect( line ) ) || isParaller( line ) ) {
+		//TODO: Line line is infinite?
+		if ( ( ( !infinite && !intersect( line ) ) && ( !line.infinite && !line.intersect( Line{ from, to } ) ) ) ||
+		     isParaller( line ) ) {
 			//TODO: Exception
 			throw std::invalid_argument( "Lines do not intersect" );
 		}
@@ -97,19 +93,86 @@ public:
 	}
 
 
-	bool isParaller( Line line )
+	Vector nearestVector( const Vector& vector )
+	{
+		return infinite ? nearestVectorOnLine( vector ) : nearestVectorOnLineSegment( vector );
+	}
+
+
+	bool isParaller( const Line& line ) const
 	{
 		return ( -a / b ) == ( -line.a / b );
 	}
 
 
-	bool isPerpendicular( Line line )
+	bool isPerpendicular( const Line& line ) const
 	{
 		return ( -a / b ) * ( -line.a / b ) == -1;
 	}
 
 
-	Vector nearestVectorOnLine( Vector& vector )
+	bool onSegment( const Vector& v ) const
+	{
+		//TODO: Near float
+		return segmentDistance( v ) < PRECISION;
+	}
+
+
+	Line reverse( )
+	{
+		return { to, from };
+	}
+
+
+	double segmentDistance( const Vector& vector ) const
+	{
+		const Vector segment = nearestVectorOnLineSegment( vector );
+		Vector diff = vector - segment;
+		return diff.length();
+	}
+
+
+	bool operator==( const Line& line ) const
+	{
+		return to == line.to && from == line.from;
+	}
+
+
+	bool operator!=( const Line& line ) const
+	{
+		return to != line.to || from != line.from;
+	}
+
+
+	Vector from;
+	Vector to;
+
+	double a;
+	double b;
+	double c;
+
+	bool infinite;
+
+private:
+
+	enum Orientation
+	{
+		collinear = 0,
+		clockWise,
+		counterClockWise
+	};
+
+
+	Orientation orientation( const Vector& v ) const
+	{
+		double val = ( ( to.y - from.y ) * ( v.x - to.x ) ) - ( ( to.x - from.x ) * ( v.y - to.y ) );
+		if ( val == 0 ) return Orientation::collinear;
+
+		return ( val > 0 ) ? Orientation::clockWise : Orientation::counterClockWise;
+	}
+
+
+	Vector nearestVectorOnLine( const Vector& vector )
 	{
 		double x = ( -a * b * vector.y + b * b * vector.x - a * c ) / ( b * b + a * a );
 		double y = ( a * a * vector.y - a * b * vector.x - b * c ) / ( b * b + a * a );
@@ -118,9 +181,14 @@ public:
 	}
 
 
-	Vector nearestVectorOnLineSegment( Vector& vector )
+	Vector nearestVectorOnLineSegment( const Vector& vector )
 	{
 		Vector nearest = nearestVectorOnLine( vector );
+
+		if ( nearest == vector && ( nearest - to ).length() < lenght() && ( nearest - from ).length() < lenght() ) {
+			return nearest;
+		}
+
 		Line p = { nearest, vector };
 
 		auto oFrom = p.orientation( from );
@@ -135,75 +203,4 @@ public:
 			return to;
 		}
 	}
-
-
-	bool onSegment( Vector v )
-	{
-		return segmentDistance( v ) == 0;
-	}
-
-
-	Line reverse( )
-	{
-		return { to, from };
-	}
-
-
-	double segmentDistance( Vector vector )
-	{
-		const Vector segment = nearestVectorOnLineSegment( vector );
-		Vector diff = vector - segment;
-		return diff.length();
-	}
-
-
-	bool operator==( Line line ) const
-	{
-		return to == line.to && from == line.from;
-	}
-
-
-	bool operator!=( Line line ) const
-	{
-		return to != line.to || from != line.from;
-	}
-
-
-//	std::string operator+(std::string ss)
-//	{
-//		return from + " - " + to + ss;
-//	}
-
-//	operator std::string() const{
-//		return from + " - " + to;
-//	}
-
-	Vector from;
-	Vector to;
-
-private:
-
-	enum Orientation
-	{
-		collinear = 0,
-		clockWise,
-		counterClockWise
-	};
-
-
-	Orientation orientation( Vector v )
-	{
-		double val = ( ( to.y - from.y ) * ( v.x - to.x ) ) - ( ( to.x - from.x ) * ( v.y - to.y ) );
-		if ( val == 0 ) return Orientation::collinear;
-
-		return ( val > 0 ) ? Orientation::clockWise : Orientation::counterClockWise;
-	}
-
-
-	double a;
-	double b;
-	double c;
-
-
-	bool infinite;
 };

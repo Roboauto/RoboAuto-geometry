@@ -7,13 +7,14 @@
 #include <array>
 #include <iostream>
 
+#include "Vector.h"
 #include "Line.h"
 
 template < int size >
-class Polygon : public Drawable
+class Polygon : public Drawable, GeometryMath::DistanceTrait, GeometryMath::ContainsTrait
 {
 public:
-	Polygon( std::array < Vector, size > & _points ) : vectors{ _points }, maxX( _points[ 0 ].x )
+	Polygon( std::array < Vector, size >& _points ) : vectors{ _points }, maxX( _points[ 0 ].x )
 	{
 		for ( int i = 1; i < vectors.size(); ++i ) {
 			if ( vectors[ i ].x > maxX ) maxX = vectors[ i ].x;
@@ -21,72 +22,55 @@ public:
 	}
 
 
-	bool contains( Vector point )
+	template < int newSize = size + 1 >
+	Polygon < newSize > addVector( const Vector& v, int index = size )
 	{
-		double x = point.x;
-		double y = point.y;
+		std::array < Vector, newSize > newVectors;
 
-		bool inside = false;
-		int count = 0;
-
-		Vector rayEnd( maxX + 1, point.y );
-
-		Line ray{ point, rayEnd };
-
-		Line line{ vectors[ vectors.size() - 1 ], vectors[ 0 ] };
-		if ( line.intersect( ray ) ) count++;
-
-		for ( int i = 0; i < vectors.size() - 1; ++i ) {
-
-			line = Line{ vectors[ i ], vectors[ i + 1 ] };
-
-			if ( line.intersect( ray ) ) count++;
-		}
-
-		return count % 2 != 0;
-	}
-
-
-	double distance( Vector vector )
-	{
-		Line line = Line( vectors[ vectors.size() - 1 ], vectors[ 0 ] );
-		double distance = line.distance( vector );
-
-		for ( int i = 0; i < vectors.size() - 1; ++i ) {
-
-			line = Line( vectors[ i ], vectors[ i + 1 ] );
-
-			double d = line.distance( vector );
-
-			if ( d < distance ) {
-				distance = d;
+		for ( int i = 0; i < newSize; ++i ) {
+			if ( i == index ) {
+				newVectors[ i ] = v;
+			} else if ( i > index ) {
+				newVectors[ i ] = vectors[ i - 1 ];
+			} else {
+				newVectors[ i ] = vectors[ i ];
 			}
 		}
 
-		return distance;
-	};
+		return Polygon < newSize >( newVectors );
+	}
 
 
+	/*template < class T >
+	bool contains( T& object ) const
+	{
+		return GeometryMath::contains( * this, object );
+	}
+
+
+	template < class T >
+	double distance( T& object ) const
+	{
+		return GeometryMath::distance( * this, object );
+	}*/
+
+
+#ifdef QT_DRAW
 	QAbstractSeries *draw( std::string name ) override
 	{
 		auto *lineSeries = new QLineSeries();
-		for ( int i = 0; i < getVectors().size(); ++i ) {
-			lineSeries->append( getVectors()[ i ].x, getVectors()[ i ].y );
+		for ( int i = 0; i < vectors.size(); ++i ) {
+			lineSeries->append( vectors[ i ].x, vectors[ i ].y );
 		}
 
-		lineSeries->append( getVectors()[ 0 ].x, getVectors()[ 0 ].y );
+		lineSeries->append( vectors[ 0 ].x, vectors[ 0 ].y );
 		lineSeries->setName( name.c_str() );
 		return lineSeries;
 	}
+#endif
 
 
-	std::array < Vector, size > getVectors( )
-	{
-		return vectors;
-	}
-
-
-	Polygon < size > rotate( double angle, Vector vector = Vector{0, 0} )
+	Polygon < size > rotate( double angle, const Vector& vector = Vector{ 0, 0 } )
 	{
 		std::array < Vector, size > rotatedPoints = vectors;
 		for ( int i = 0; i < vectors.size(); ++i ) {
@@ -97,7 +81,6 @@ public:
 	}
 
 
-private:
-	double maxX;
 	std::array < Vector, size > vectors;
+	double maxX;
 };
