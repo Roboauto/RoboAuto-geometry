@@ -10,6 +10,7 @@
 #include "Line.h"
 #include "Polygon.h"
 #include "Circle.h"
+#include "Polyline.h"
 
 namespace GeometryMath {
 	//
@@ -170,6 +171,17 @@ namespace GeometryMath {
 		return distance( v, c );
 	}
 
+	template <>
+	bool distance( Polyline& p1, Polyline& p2 )
+	{
+		throw std::runtime_error("not implemented");
+	}
+
+	template <>
+	bool distance( Polyline& p1, Vector& p2 )
+	{
+		throw std::runtime_error("not implemented");
+	}
 
 	//
 	// Polygon contains ...
@@ -287,6 +299,4 @@ namespace GeometryMath {
 
 		return count == 0;
 	}
-
-
 };

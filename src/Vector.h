@@ -164,13 +164,21 @@ public:
 		return { x / i, y / i };
 	}
 
-
 	explicit operator std::string( ) const
 	{
 		return "[" + std::to_string( x ) + "," + std::to_string( y ) + "]";
 	}
 
+	double getX() const
+	{
+		return x;
+	}
 
-	const double x;
-	const double y;
+	double getY() const
+	{
+		return y;
+	}
+private:
+	double x;
+	double y;
 };
