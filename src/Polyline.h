@@ -2,11 +2,13 @@
 
 #include "Geometry.h"
 #include "Vector.h"
+#include <vector>
 
-class Polyline : GeometryMath::DistanceTrait {
+class Polyline : public GeometryMath::DistanceTrait {
 public:
     Polyline() = default;
-    Polyline(const std::vector<Vector> &pts){
+
+    Polyline(const std::vector<Vector>& pts) {
         from = pts.front();
         to = pts.back();
 
@@ -15,7 +17,7 @@ public:
 
     // distance
 
-    void insertPointIntoSegment(const int segmentId, const Vector &pt){}
+    void insertPointIntoSegment(const int segmentId, const Vector& pt) {}
 
 private:
     std::vector<Vector> points{};
