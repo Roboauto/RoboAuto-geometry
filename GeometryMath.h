@@ -20,6 +20,39 @@ namespace GeometryMath {
 
     template<>
     double distance(const Vector& v, const Line& l) {
+        auto x = v.getX(), y = v.getY(), x1 = l.from.getX(), x2 = l.to.getX(), y1 = l.from.getY(), y2 = l.to.getY();
+        auto A = x - x1;
+        auto B = y - y1;
+        auto C = x2 - x1;
+        auto D = y2 - y1;
+
+        auto dot = A * C + B * D;
+        auto len_sq = C * C + D * D;
+        auto param = -1.;
+        if (len_sq != 0) {
+            param = dot / len_sq;
+        }
+
+        double xx, yy;
+
+        if (param < 0) {
+            xx = x1;
+            yy = y1;
+        }
+        else if (param > 1) {
+            xx = x2;
+            yy = y2;
+        }
+        else {
+            xx = x1 + param * C;
+            yy = y1 + param * D;
+        }
+
+        auto dx = x - xx;
+        auto dy = y - yy;
+        return std::sqrt(dx * dx + dy * dy);
+
+
         double d = std::sqrt(l.a * l.a + l.b * l.b);
         double d1 = std::abs(l.a * v.getX() + l.b * v.getY() + l.c);
         return d1 / d;
