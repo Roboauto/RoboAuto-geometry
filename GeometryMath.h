@@ -7,19 +7,21 @@
 #include <cmath>
 
 #include "src/Vector.h"
+#include "src/Vector3.h"
 #include "src/Line.h"
 #include "src/Polygon.h"
 #include "src/Circle.h"
 #include "src/Polyline.h"
+#include "src/Plane.h"
 
 namespace GeometryMath {
     template<>
-    double distance(const Vector& v1, const Vector& v2) {
+    inline double distance(const Vector& v1, const Vector& v2) {
         return std::sqrt(std::pow(v1.getX() - v2.getX(), 2) + std::pow(v1.getY() - v2.getY(), 2));
     }
 
     template<>
-    double distance(const Vector& v, const Line& l) {
+    inline double distance(const Vector& v, const Line& l) {
         auto x = v.getX(), y = v.getY(), x1 = l.from.getX(), x2 = l.to.getX(), y1 = l.from.getY(), y2 = l.to.getY();
         auto A = x - x1;
         auto B = y - y1;
@@ -60,7 +62,7 @@ namespace GeometryMath {
 
 
     template<int size>
-    double distance(const Vector& v, const Polygon<size>& p) {
+    inline double distance(const Vector& v, const Polygon<size>& p) {
         Line line = Line(p.vectors[p.vectors.size() - 1], p.vectors[0]);
         double distance = line.distance(v);
 
@@ -79,24 +81,24 @@ namespace GeometryMath {
     }
 
     template<>
-    double distance(const Vector& v, const Circle& c) {
+    inline double distance(const Vector& v, const Circle& c) {
         auto d = (v - c.center);
         return d.length();
     }
 
     template<>
-    double distance(const Line& l, const Vector& v) {
+    inline double distance(const Line& l, const Vector& v) {
         return distance(v, l);
     }
 
     template<>
-    double distance(const Line& l, const Circle& c) {
+    inline double distance(const Line& l, const Circle& c) {
         return distance(l, c.center);
     }
 
 
     template<int size>
-    double distance(const Polygon<size>& p, const Vector& v) {
+    inline double distance(const Polygon<size>& p, const Vector& v) {
         Line line{p.vectors[p.vectors.size() - 1], p.vectors[0]};
         double distance = line.distance(v);
 
@@ -113,36 +115,36 @@ namespace GeometryMath {
     }
 
     template<int size>
-    double distance(const Polygon<size>& p, const Circle& c) {
+    inline double distance(const Polygon<size>& p, const Circle& c) {
         return distance(p, c.center);
     }
 
     template<>
-    double distance(const Circle& c1, const Circle& c2) {
+    inline double distance(const Circle& c1, const Circle& c2) {
         return distance(c1.center, c2.center);
     }
 
 
     template<>
-    double distance(const Circle& c, const Line& l) {
+    inline double distance(const Circle& c, const Line& l) {
         auto v = l.nearestVector(c.center);
         return distance(v, c);
     }
 
 
     template<int size>
-    double distance(const Circle& c, const Polygon<size>& p) {
+    inline double distance(const Circle& c, const Polygon<size>& p) {
         return distance(p, c);
     }
 
 
     template<>
-    double distance(const Circle& c, const Vector& v) {
+    inline double distance(const Circle& c, const Vector& v) {
         return distance(v, c);
     }
 
     template <typename T1, typename T2>
-    double distance(const T1&, const T2&) {
+    inline double distance(const T1&, const T2&) {
         std::stringstream errStr;
         errStr << "distance for ";
         errStr << typeid(T1).name();
@@ -153,7 +155,7 @@ namespace GeometryMath {
     }
 
     template<int size>
-    bool contains(const Polygon<size>& p, const Vector& v) {
+    inline bool contains(const Polygon<size>& p, const Vector& v) {
         int count = 0;
 
         Vector rayEnd(p.maxX + 1, v.getY());
@@ -174,13 +176,13 @@ namespace GeometryMath {
 
 
     template<int size>
-    bool contains(const Polygon<size>& p, const Line& l) {
+    inline bool contains(const Polygon<size>& p, const Line& l) {
         return !l.infinite && contains(p, l.from) && contains(p, l.to);
     }
 
 
     template<int size1, int size2>
-    bool contains(const Polygon<size1>& p1, const Polygon<size2>& p2) {
+    inline bool contains(const Polygon<size1>& p1, const Polygon<size2>& p2) {
         for (Vector v: p2.vectors) {
             if (!contains(p1, v)) {
                 return false;
@@ -193,7 +195,7 @@ namespace GeometryMath {
 
 
     template<int size>
-    bool contains(const Polygon<size>& p, const Circle& c) {
+    inline bool contains(const Polygon<size>& p, const Circle& c) {
         int count = 0;
         Line l{p.vectors[p.vectors.size() - 1], p.vectors[0]};
         count += c.intersect(l);
@@ -209,25 +211,25 @@ namespace GeometryMath {
     }
 
     template<>
-    bool contains(const Circle& c, const Vector& v) {
+    inline bool contains(const Circle& c, const Vector& v) {
 
         return distance(c, v) <= c.radius;
     }
 
 
     template<>
-    bool contains(const Circle& c, const Line& l) {
+    inline bool contains(const Circle& c, const Line& l) {
         return !l.infinite && contains(c, l.from) && contains(c, l.to);
     }
 
 
     template<>
-    bool contains(const Circle& p1, const Circle& p2) {
+    inline bool contains(const Circle& p1, const Circle& p2) {
         return distance(p1, p2) + p2.radius < p1.radius;
     }
 
     template <typename T1, typename T2>
-    bool contains(const T1&, const T2&) {
+    inline bool contains(const T1&, const T2&) {
         std::stringstream errStr;
         errStr << "contains for ";
         errStr << typeid(T1).name();
@@ -238,7 +240,7 @@ namespace GeometryMath {
     }
 
     template<int size>
-    bool contains(const Circle& c, const Polygon<size>& p) {
+    inline bool contains(const Circle& c, const Polygon<size>& p) {
         int count = 0;
         Line l{p.vectors[p.vectors.size() - 1], p.vectors[0]};
         count += c.intersect(l);
